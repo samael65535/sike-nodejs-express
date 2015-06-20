@@ -1,0 +1,24 @@
+{
+  "name": "sike-nodejs-express",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/samael65535/sike-nodejs-express.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/samael65535/sike-nodejs-express/issues"
+  },
+  "homepage": "https://github.com/samael65535/sike-nodejs-express#readme",
+  "devDependencies": {
+    "chai": "^3.0.0",
+    "mocha": "^2.2.5",
+    "supertest": "^1.0.1"
+  }
+}

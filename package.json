@@ -6,6 +6,9 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
+  "bin" : {
+    "myexpress": "./bin/myexpress.js"
+  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/samael65535/sike-nodejs-express.git"

@@ -3,8 +3,8 @@ var merge = require('utils-merge');
 var proto = {};
 
 module.exports = function() {
-    function app(req, res, next) {
-        app.handle(req, res, next);
+    function app(req, res) {
+        app.handle(req, res);
     }
     merge(app, proto);
     app.stack = [];
@@ -17,13 +17,11 @@ proto.listen = function() {
 };
 
 proto.use = function(fn) {
-    this.stack.push(function(req, res, next) {
-        return fn.call(null, req, res, next);
-    });
+    this.stack.push(fn);
     return this;
 };
 
-proto.handle = function(req, res, next) {
+proto.handle = function(req, res) {
     var index = 0;
     var stack = this.stack;
     var next = function(err) {
@@ -36,7 +34,11 @@ proto.handle = function(req, res, next) {
                     next(err);
                 }
             } else {
-                layer.call(null, req, res, next);
+                if (layer.length === 4) {
+                    next();
+                } else {
+                    layer.call(null, req, res, next);
+                }
             }
         } else {
             if (err) {

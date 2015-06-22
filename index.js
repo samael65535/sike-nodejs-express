@@ -29,10 +29,23 @@ proto.handle = function(req, res, next) {
     var next = function(err) {
         var layer = stack[index++];
         if (layer) {
-            layer.call(null, req, res, next);
+            if (err) {
+                if (layer.length === 4) {
+                    layer.call(null, err, req, res, next);
+                } else {
+                    next(err);
+                }
+            } else {
+                layer.call(null, req, res, next);
+            }
         } else {
-            res.writeHead(404);
-            res.end();
+            if (err) {
+                res.writeHead(500);
+                res.end();
+            } else {
+                res.writeHead(404);
+                res.end();
+            }
         }
     };
     next();

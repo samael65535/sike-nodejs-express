@@ -55,4 +55,20 @@ describe('app', function() {
             request(app).get("/").expect('hello m2').end(done)
         });
     });
+
+    describe('Implement Error Handling', function() {
+        var app;
+        beforeEach(function() {
+            app = new express();
+        });
+
+        it('should return 500 for unhandled error', function(done) {
+            var m1 = function(req, res, next) {
+                console.log(next);
+                next(new Error('boom!'));
+            };
+            app.use(m1);
+            request(app).get('/').expect(500).end(done);
+        })
+    })
 });

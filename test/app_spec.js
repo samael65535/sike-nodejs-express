@@ -34,4 +34,26 @@ describe('app', function() {
             expect(app.stack.length).to.eql(2);
         })
     });
+
+    describe("calling middleware stack",function() {
+        var app;
+        beforeEach(function() {
+            app = new expect();
+        });
+
+        // test cases
+        it("test stack call", function(done){
+            var m1 = function(req, res, next) {
+                console.log("hello m1");
+                next()
+            };
+            var m2 = function(req, res) {
+                console.log("hello m2");
+                res.end("hello m2");
+            }
+            app.use(m1);
+            app.use(m2);
+            request(app).get("").expect('hello m2').end(done)
+        });
+    });
 });

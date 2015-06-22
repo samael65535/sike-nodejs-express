@@ -38,7 +38,7 @@ describe('app', function() {
     describe("calling middleware stack",function() {
         var app;
         beforeEach(function() {
-            app = new expect();
+            app = new express();
         });
 
         // test cases
@@ -48,12 +48,11 @@ describe('app', function() {
                 next()
             };
             var m2 = function(req, res) {
-                console.log("hello m2");
                 res.end("hello m2");
             }
             app.use(m1);
             app.use(m2);
-            request(app).get("").expect('hello m2').end(done)
+            request(app).get("/").expect('hello m2').end(done)
         });
     });
 });

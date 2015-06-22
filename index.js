@@ -48,5 +48,11 @@ proto.handle = function(req, res, next) {
             }
         }
     };
-    next();
+
+    try {
+        next();
+    } catch(e) {
+        res.writeHead(500);
+        res.end();
+    }
 };

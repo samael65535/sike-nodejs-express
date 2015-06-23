@@ -1,5 +1,6 @@
 var http = require('http');
 var merge = require('utils-merge');
+var Layer = require('./lib/layer');
 var proto = {};
 
 module.exports = function() {

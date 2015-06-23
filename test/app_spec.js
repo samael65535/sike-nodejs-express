@@ -5,6 +5,7 @@ var express = require('..');
 var request = require('supertest');
 var expect = require('chai').expect;
 var http = require('http');
+var Layer = require('../lib/layer')
 describe('app', function() {
     describe('create http server', function() {
         var app = express();
@@ -99,4 +100,29 @@ describe('app', function() {
             request(app).get("/").expect("m2").end(done);
         });
     })
+
 });
+
+describe('Layer class and the match method', function() {
+    var layer, middleware;
+    beforeEach(function() {
+        var Layer = require("../lib/layer");
+        middleware = function(req, res, next) {};
+        layer = new Layer("/foo", middleware);
+    });
+    it('sets layer.handle to be the middleware', function() {
+        expect(layer.handle).to.eql(middleware);
+    });
+
+
+
+    //it("returns undefined if path doesn't match", function(done) {
+    //    var layer = new Layer('bar');
+    //});
+    //it('returns matched path if layer matches the request path exactly', function(done) {
+    //    var layer = new Layer('bar');
+    //});
+    //it("returns matched prefix if the layer matches the prefix of the request path", function(done) {
+    //    var layer = new Layer('bar');
+    //});
+})

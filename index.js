@@ -3,8 +3,8 @@ var merge = require('utils-merge');
 var proto = {};
 
 module.exports = function() {
-    function app(req, res) {
-        app.handle(req, res);
+    function app(req, res, next) {
+        app.handle(req, res, next);
     }
     merge(app, proto);
     app.stack = [];
@@ -21,40 +21,47 @@ proto.use = function(fn) {
     return this;
 };
 
-proto.handle = function(req, res) {
+proto.handle = function(req, res, next2) {
     var index = 0;
     var stack = this.stack;
     var next = function(err) {
         var layer = stack[index++];
-        if (layer) {
-            if (err) {
-                if (layer.length === 4) {
-                    layer.call(null, err, req, res, next);
-                } else {
-                    next(err);
-                }
-            } else {
-                if (layer.length === 4) {
-                    next();
-                } else {
-                    layer.call(null, req, res, next);
-                }
-            }
+        if (index > stack.length) {
+            next2(err);
         } else {
-            if (err) {
-                res.writeHead(500);
-                res.end();
+            if (layer) {
+                call(layer, err, req, res, next);
             } else {
-                res.writeHead(404);
-                res.end();
+                if (err) {
+                    res.writeHead(500);
+                    res.end();
+                } else {
+                    res.writeHead(404);
+                    res.end();
+                }
             }
         }
     };
+    next();
+};
 
+function call(handle, err, req, res, next) {
     try {
-        next();
+        if (err) {
+            if (handle.length === 4) {
+                handle.call(this, err, req, res, next);
+            } else {
+                next(err);
+            }
+        } else {
+            if (handle.length === 4) {
+                next();
+            } else {
+                handle.call(this, req, res, next);
+            }
+        }
     } catch(e) {
         res.writeHead(500);
         res.end();
     }
-};
+}

@@ -1,21 +1,34 @@
 #!/usr/bin/env node
 var express = require("../index");
 var app = express();
+var subApp = express();
 var m1 = function(req,res,next) {
+    console.log("m1");
     next();
 }
 
-var e1 = function(err,req,res,next) {
+var m2 = function(req,res,next) {
     // timeout
-    console.log("e1");
+    console.log("m2");
+    //res.end();
+    next();
 }
 
-var m2 = function(req,res,next) {
-    res.end("m2");
-}
+var m3 = function(req,res,next) {
+    console.log("m3");
+    next();
+};
+
+var m4 = function(req,res,next) {
+    console.log("m4");
+    next();
+};
 
 app.use(m1);
-app.use(e1); // should skip this
+app.use(subApp);
 app.use(m2);
+
+subApp.use(m3);
+subApp.use(m4);
 app.listen(4000);
 

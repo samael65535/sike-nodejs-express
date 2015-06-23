@@ -124,3 +124,16 @@ describe('Layer class and the match method', function() {
         expect(layer.match('/foo/bar')).to.have.property('path', '/foo');
     });
 })
+
+describe('The middlewares called should match request path:', function() {
+    var app;
+    before(function() {
+        app = express();
+        app.use('/', function(req, res, next){
+            res.end('root');
+        });
+    });
+    it('returns root for GET /', function(done){
+        request("http://localhost:4000").get('/').expect('root').end(done);
+    });
+});

@@ -1,12 +1,11 @@
 #!/usr/bin/env node
 var express = require("../index");
-var Layer = require('../lib/layer')
 var app = express();
-var middle = function(req, res, next) {
-
-};
-var layer = new Layer('/food', middle);
-console.log(layer.match('/food/mashroom'));
-console.log(layer.handle === middle);
-//app.listen(4000);
+app.use("/foo",function(req,res, next) {
+    res.end("foo");
+});
+app.use('/', function(req, res){
+    res.end('root');
+});
+app.listen(4000);
 

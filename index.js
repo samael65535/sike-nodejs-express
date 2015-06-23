@@ -17,8 +17,14 @@ proto.listen = function() {
     return server.listen.apply(server, arguments)
 };
 
-proto.use = function(fn) {
-    this.stack.push(fn);
+proto.use = function(routerOrMiddleware, middleware) {
+    if (middleware) {
+        this.stack.push(new Layer(routerOrMiddleware, middleware));
+    } else {
+        this.stack.push(new Layer('/', middleware));
+    }
+
+
     return this;
 };
 
@@ -46,19 +52,21 @@ proto.handle = function(req, res, next2) {
     next();
 };
 
-function call(handle, err, req, res, next) {
+function call(layer, err, req, res, next) {
+    var handle = layer.handle;
     try {
         if (err) {
-            if (handle.length === 4) {
-                handle.call(this, err, req, res, next);
+            console.log(layer.match(req.url));
+            if (handle.length === 4 && layer.match(req.url)) {
+                handle.call(layer, err, req, res, next);
             } else {
                 next(err);
             }
         } else {
-            if (handle.length === 4) {
+            if (handle.length === 4 || !layer.match(req.url)) {
                 next();
             } else {
-                handle.call(this, req, res, next);
+                handle.call(layer, req, res, next);
             }
         }
     } catch(e) {

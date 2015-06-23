@@ -37,7 +37,16 @@ proto.handle = function(req, res, next2) {
             next2(err);
         } else {
             if (layer) {
-                call(layer, err, req, res, next);
+                try {
+                    call(layer, err, req, res, next);
+                } catch(e) {
+                    if (index >= stack.length) {
+                        res.writeHead(500);
+                        res.end();
+                    } else {
+                        next(e)
+                    }
+                }
             } else {
                 if (err) {
                     res.writeHead(500);
@@ -54,23 +63,18 @@ proto.handle = function(req, res, next2) {
 
 function call(layer, err, req, res, next) {
     var handle = layer.handle;
-    try {
-        if (err) {
-            console.log(layer.match(req.url));
-            if (handle.length === 4 && layer.match(req.url)) {
-                handle.call(layer, err, req, res, next);
-            } else {
-                next(err);
-            }
+    if (err) {
+        if (handle.length === 4 && layer.match(req.url).path == req.url) {
+            handle.call(layer, err, req, res, next);
         } else {
-            if (handle.length === 4 || !layer.match(req.url)) {
-                next();
-            } else {
-                handle.call(layer, req, res, next);
-            }
+            next(err);
         }
-    } catch(e) {
-        res.writeHead(500);
-        res.end();
+    } else {
+        if (handle.length === 4 || !layer.match(req.url).path) {
+            next();
+        } else {
+            handle.call(layer, req, res, next);
+        }
     }
+
 }

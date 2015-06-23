@@ -114,7 +114,7 @@ describe('Layer class and the match method', function() {
         expect(layer.handle).to.eql(middleware);
     });
 
-    it("returns undefined if path doesn't match", function(done) {
+    it("returns undefined if path doesn't match", function() {
         expect(layer.match('/bar')).to.be.undefined;
     });
     //it('returns matched path if layer matches the request path exactly', function(done) {

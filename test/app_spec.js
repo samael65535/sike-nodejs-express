@@ -117,9 +117,9 @@ describe('Layer class and the match method', function() {
     it("returns undefined if path doesn't match", function() {
         expect(layer.match('/bar')).to.be.undefined;
     });
-    //it('returns matched path if layer matches the request path exactly', function(done) {
-    //    var layer = new Layer('bar');
-    //});
+    it('returns matched path if layer matches the request path exactly', function() {
+        expect(layer.match('/foo')).to.have.property('path', '/foo');
+    });
     //it("returns matched prefix if the layer matches the prefix of the request path", function(done) {
     //    var layer = new Layer('bar');
     //});

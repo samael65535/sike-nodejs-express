@@ -138,7 +138,7 @@ describe('The middlewares called should match request path:', function() {
     });
 });
 
-describe('Path paramters extraction', function() {
+describe('Path parameters extraction', function() {
     var layer;
     before(function() {
         layer = new Layer("/foo/:a/:b", function(req, res, next) {
@@ -157,10 +157,10 @@ describe('Path paramters extraction', function() {
     });
     it('returns match data for prefix match', function() {
         var match = layer.match('/foo/aa/bb/cc');
-        expect(match.path).to.have.property("path", "/foo/aa/bb/cc");
+        expect(match).to.have.property("path", "/foo/aa/bb");
     });
     it('should decode uri encoding', function() {
-        expect(layer.match('/foo/aa/b%20b')).to.deep.equal({a:"aa", b:'b b'});
+        expect(layer.match('/foo/aa/b%20b').params).to.deep.equal({a:"aa", b:'b b'});
     });
     it('should strip trialing slash', function() {
         layer = new Layer("/")

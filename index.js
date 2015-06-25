@@ -75,8 +75,10 @@ function call(layer, err, req, res, next) {
     var match;
     if (handle.hasOwnProperty('use')) {
         req.parent_url = layer.path;
+        match = layer.match(req.url);
         if (err) {
             if (handle.length === 4) {
+                req.params = match.params;
                 handle(err, req, res, next);
             } else {
                 next(err);
@@ -85,6 +87,7 @@ function call(layer, err, req, res, next) {
             if (handle.length === 4) {
                 next();
             } else {
+                req.params = match.params;
                 handle(req, res, next);
             }
         }

@@ -23,8 +23,6 @@ proto.use = function(routerOrMiddleware, middleware) {
     } else {
         this.stack.push(new Layer('/', middleware));
     }
-
-
     return this;
 };
 

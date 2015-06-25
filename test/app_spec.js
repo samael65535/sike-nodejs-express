@@ -137,3 +137,38 @@ describe('The middlewares called should match request path:', function() {
         request("http://localhost:4000").get('/').expect('root').end(done);
     });
 });
+
+describe('Path paramters extraction', function() {
+    var layer;
+    before(function() {
+        layer = new Layer("/foo/:a/:b", function(req, res, next) {
+
+        });
+    });
+
+    it('returns undefined for unmatched path', function() {
+        expect(layer.match('/foo')).to.be.undefined;
+    });
+    it('returns undefined if there is this enought extraction', function() {
+        expect(layer.match('/foo/aa')).to.be.undefined;
+    });
+    it('returns match data for exact match', function() {
+        expect(layer.match('/foo/aa/bb').params).to.deep.equal({a:"aa", b:"bb"});
+    });
+    it('returns match data for prefix match', function() {
+        var match = layer.match('/foo/aa/bb/cc');
+        expect(match.path).to.have.property("path", "/foo/aa/bb/cc");
+    });
+    it('should decode uri encoding', function() {
+        expect(layer.match('/foo/aa/b%20b')).to.deep.equal({a:"aa", b:'b b'});
+    });
+    it('should strip trialing slash', function() {
+        layer = new Layer("/")
+        expect(layer.match("/foo")).to.not.be.undefined;
+        expect(layer.match("/")).to.not.be.undefined;
+
+        layer = new Layer("/foo/")
+        expect(layer.match("/foo")).to.not.be.undefined;
+        expect(layer.match("/foo/")).to.not.be.undefined;
+    });
+});

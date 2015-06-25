@@ -17,11 +17,21 @@ proto.listen = function() {
     return server.listen.apply(server, arguments)
 };
 
-proto.use = function(routerOrMiddleware, middleware) {
-    if (middleware) {
-        this.stack.push(new Layer(routerOrMiddleware, middleware));
+proto.use = function(router, layer) {
+    if (layer) {
+        if (typeof layer.handle === "function") {
+            var path = router;
+            if (path[path.length - 1] == '/') {
+                path = path.slice(0, -1);
+            }
+            this.stack.push(new Layer(path, layer));
+        } else {
+            var fn = layer;
+            this.stack.push(new Layer(router, fn));
+        }
     } else {
-        this.stack.push(new Layer('/', middleware));
+        var fn = router;
+        this.stack.push(new Layer('/', fn));
     }
     return this;
 };
@@ -39,6 +49,7 @@ proto.handle = function(req, res, next2) {
                     call(layer, err, req, res, next);
                 } catch(e) {
                     if (index >= stack.length) {
+                        console.log(e);
                         res.writeHead(500);
                         res.end();
                     } else {
@@ -61,20 +72,44 @@ proto.handle = function(req, res, next2) {
 
 function call(layer, err, req, res, next) {
     var handle = layer.handle;
-    var match = layer.match(req.url);
-    if (err) {
-        if (handle.length === 4 && match) {
-            req.params = match.params
-            handle.call(layer, err, req, res, next);
+    var match;
+    if (handle.hasOwnProperty('use')) {
+        req.parent_url = layer.path;
+        if (err) {
+            if (handle.length === 4) {
+                handle(err, req, res, next);
+            } else {
+                next(err);
+            }
         } else {
-            next(err);
+            if (handle.length === 4) {
+                next();
+            } else {
+                handle(req, res, next);
+            }
         }
     } else {
-        if (handle.length === 4 || !match) {
-            next();
+        var url;
+        if (req.parent_url == req.url)
+            url = req.url;
+        else
+            url = req.url.slice(req.parent_url.length, req.url.length);
+        match = layer.match(url);
+        req.url = url;
+        if (err) {
+            if (handle.length === 4 && match) {
+                req.params = match.params;
+                handle(err, req, res, next);
+            } else {
+                next(err);
+            }
         } else {
-            req.params = match.params
-            handle.call(layer, req, res, next);
+            if (handle.length === 4 || !match) {
+                next();
+            } else {
+                req.params = match.params;
+                handle(req, res, next);
+            }
         }
     }
 

@@ -3,18 +3,15 @@ var express = require("../index");
 var Layer = require('../lib/layer');
 var p2re = require("path-to-regexp");
 var app = express();
-//var layer = new Layer("/", function(req, res, next) {
-//
-//});
-//console.log(layer.match("/foo"));
-//console.log(layer.match("/"));
-//
-var layer = new Layer("/foo/:a/:b/");
+var subapp = express();
 
-console.log(layer.match("/foo"));
-console.log(layer.match("/foo/"));
-console.log(layer.match("/foo/aa"));
-console.log(layer.match("/foo/aa/bb"));
-console.log(layer.match("/foo/aa/bb/cc"));
-console.log(layer.match("/foo/aa/bb/c   c"));
+subapp.use("/bar",function(req,res) {
+    res.end("embedded app: "+req.url);
+});
+
+app.use("/foo",subapp);
+
+app.use("/foo",function(req,res) {
+    res.end("handler: "+req.url);
+});
 app.listen(4000);

@@ -61,16 +61,19 @@ proto.handle = function(req, res, next2) {
 
 function call(layer, err, req, res, next) {
     var handle = layer.handle;
+    var match = layer.match(req.url);
     if (err) {
-        if (handle.length === 4 && layer.match(req.url).path == req.url) {
+        if (handle.length === 4 && match) {
+            req.params = match.params
             handle.call(layer, err, req, res, next);
         } else {
             next(err);
         }
     } else {
-        if (handle.length === 4 || !layer.match(req.url).path) {
+        if (handle.length === 4 || !match) {
             next();
         } else {
+            req.params = match.params
             handle.call(layer, req, res, next);
         }
     }

@@ -2,6 +2,7 @@ var http = require('http');
 var merge = require('utils-merge');
 var Layer = require('./lib/layer');
 var makeRoute = require('./lib/route')
+var methods = require('methods');
 var proto = {};
 
 module.exports = function() {
@@ -18,9 +19,11 @@ proto.listen = function() {
     return server.listen.apply(server, arguments)
 };
 
-proto.get = function(path, fn) {
-    this.use(path, makeRoute('GET', fn))
-};
+methods.forEach(function(m) {
+    proto[m] = function(path, fn) {
+        this.use(path, makeRoute(m, fn));
+    };
+});
 
 proto.use = function(router, layer) {
     if (layer) {

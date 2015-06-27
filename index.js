@@ -21,9 +21,19 @@ proto.listen = function() {
 
 methods.forEach(function(m) {
     proto[m] = function(path, fn) {
-        this.use(path, makeRoute(m, fn));
+        if (fn) {
+            this.use(path, makeRoute(m, fn));
+        }
+        else {
+            fn = path;
+            this.use(this.defaultPath, makeRoute(m ,fn))
+        }
     };
 });
+
+proto.route = function(path) {
+    this.defaultPath = path;
+};
 
 proto.use = function(router, layer) {
     if (layer) {
@@ -106,7 +116,7 @@ function call(layer, err, req, res, next) {
     } else {
         if (err) {
             if (handle.length >= 4 && match) {
-                req.params = match.params
+                req.params = match.params;
                 handle.call(layer, err, req, res, next);
             } else {
                 next(err);
@@ -115,7 +125,7 @@ function call(layer, err, req, res, next) {
             if (handle.length >= 4 || !match) {
                 next();
             } else {
-                req.params = match.params
+                req.params = match.params;
                 handle.call(layer, req, res, next);
             }
         }

@@ -33,6 +33,7 @@ methods.forEach(function(m) {
 
 proto.route = function(path) {
     this.defaultPath = path;
+    return this;
 };
 
 proto.use = function(router, layer) {

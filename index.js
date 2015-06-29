@@ -19,22 +19,25 @@ proto.listen = function() {
     return server.listen.apply(server, arguments)
 };
 
-//methods.forEach(function(m) {
-//    proto[m] = function(path, fn) {
-//        if (fn) {
-//            this.use(path, makeRoute(m, fn));
-//        }
-//        else {
-//            fn = path;
-//            this.use(this.defaultPath, makeRoute(m ,fn))
-//        }
-//    };
-//});
+
 
 proto.route = function(path) {
     var r = makeRoute();
     this.stack.push(new Layer(path, r));
     return r;
+};
+
+methods.forEach(function(m) {
+    proto[m] = function(path, fn) {
+        var r = makeRoute();
+        r.use(m, fn);
+        this.stack.push(new Layer(path, r));
+        return this;
+    };
+});
+
+proto['all'] = function(path, handler) {
+    return this['get'](path, handler);
 };
 
 proto.use = function(router, layer) {

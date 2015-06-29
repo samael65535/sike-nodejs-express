@@ -117,9 +117,13 @@ function call(layer, err, req, res, next) {
         }
     } else {
         if (err) {
-            if (handle.length >= 4 && match) {
+            if (match) {
                 req.params = match.params;
-                handle.call(layer, err, req, res, next);
+                if (handle.length >= 4) {
+                    handle.call(layer, err, req, res, next);
+                } else {
+                    handle.call(layer,req, res);
+                }
             } else {
                 next(err);
             }

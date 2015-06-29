@@ -32,8 +32,9 @@ proto.listen = function() {
 //});
 
 proto.route = function(path) {
-    this.defaultPath = path;
-    return this;
+    var r = makeRoute();
+    this.stack.push(new Layer(path, r));
+    return r;
 };
 
 proto.use = function(router, layer) {

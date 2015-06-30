@@ -11,6 +11,7 @@ module.exports = function() {
     }
     merge(app, proto);
     app.stack = [];
+    app._factories = {};
     return app;
 };
 
@@ -19,7 +20,9 @@ proto.listen = function() {
     return server.listen.apply(server, arguments)
 };
 
-
+proto.factory = function(name, fn) {
+    this._factories[name] = fn;
+};
 
 proto.route = function(path) {
     var r = makeRoute();

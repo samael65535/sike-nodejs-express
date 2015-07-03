@@ -2,6 +2,7 @@ var http = require('http');
 var merge = require('utils-merge');
 var Layer = require('./lib/layer');
 var makeRoute = require('./lib/route')
+var inject = require('./lib/injector')
 var methods = require('methods');
 var proto = {};
 
@@ -139,8 +140,13 @@ function call(layer, err, req, res, next) {
                 next();
             } else {
                 req.params = match.params;
-                handle.call(layer, req, res, next);
+                handle.call(layer.handle, req, res, next);
             }
         }
     }
 }
+
+proto.inject = function(fn) {
+    var injector = inject(fn,this);
+    return injector;
+};

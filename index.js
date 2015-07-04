@@ -69,6 +69,7 @@ proto.use = function(router, layer) {
 proto.handle = function(req, res, next2) {
     var index = 0;
     var stack = this.stack;
+    var that = this;
     var next = function(err) {
         var layer = stack[index++];
         if (index > stack.length) {
@@ -80,6 +81,7 @@ proto.handle = function(req, res, next2) {
         } else {
             if (layer) {
                 try {
+                    that.monkey_patch(req, res);
                     call(layer, err, req, res, next);
                 } catch(e) {
                     if (index >= stack.length) {
@@ -104,7 +106,6 @@ proto.handle = function(req, res, next2) {
 };
 
 function call(layer, err, req, res, next) {
-    proto.monkey_patch(req, res);
     var handle = layer.handle;
     var match = layer.match(req.url, req.method == 'GET');
     if (handle.hasOwnProperty('use') && match) {
@@ -114,7 +115,7 @@ function call(layer, err, req, res, next) {
         if (err) {
             if (handle.length === 4) {
                 req.params = match.params
-                handle.call(layer, err, req, res, next);
+                handle.call(layer.handle, err, req, res, next);
             } else {
                 next(err);
             }
@@ -123,7 +124,7 @@ function call(layer, err, req, res, next) {
                 next();
             } else {
                 req.params = match.params;
-                handle.call(layer, req, res, next);
+                handle.call(layer.handle, req, res, next);
             }
         }
     } else {
@@ -155,11 +156,7 @@ proto.inject = function(fn) {
 };
 
 proto.monkey_patch = function(req, res) {
-    request.__proto__ = req.__proto__;
-    req.__proto__ = request;
-
-
-    response.__proto__ = res.__proto__;
-    res.__proto__ = response;
-
+    //request.__proto__ = req.__proto__;
+    req.__proto__ = request(req, this);
+    res.__proto__ = response(res, this);
 };

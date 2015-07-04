@@ -13,9 +13,19 @@ var app = express();
 
 //injector = inject(handler,app);
 //injector(req,res,next);
+var subapp = express();
+var _app, _subapp;
+subapp.use(function(req,res,next) {
+    _subapp = req.app; // => subapp
+    console.log(subapp === _subapp);
+    next();
+});
+app.use(subapp);
 app.use(function(req,res) {
-    app.monkey_patch(req,res);
-    res.end(req.isExpress + "," + res.isExpress);
+    _app = req.app;
+    console.log(app === _app);
+    console.log(_app === subapp);
+    res.end("ok");
 });
 
 //app.use(function(req,res) {

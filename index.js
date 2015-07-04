@@ -158,5 +158,7 @@ proto.inject = function(fn) {
 proto.monkey_patch = function(req, res) {
     //request.__proto__ = req.__proto__;
     req.__proto__ = request(req, this);
+    req.res = res;
     res.__proto__ = response(res, this);
+    res.req = req;
 };

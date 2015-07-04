@@ -104,6 +104,7 @@ proto.handle = function(req, res, next2) {
 };
 
 function call(layer, err, req, res, next) {
+    proto.monkey_patch(req, res);
     var handle = layer.handle;
     var match = layer.match(req.url, req.method == 'GET');
     if (handle.hasOwnProperty('use') && match) {
@@ -154,9 +155,11 @@ proto.inject = function(fn) {
 };
 
 proto.monkey_patch = function(req, res) {
-    request.__proto__ = req;
-    req.prototype = request;
+    request.__proto__ = req.__proto__;
+    req.__proto__ = request;
 
-    response.__proto__ = res;
-    res.prototype = response;
+
+    response.__proto__ = res.__proto__;
+    res.__proto__ = response;
+
 };

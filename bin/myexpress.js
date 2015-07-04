@@ -17,4 +17,8 @@ app.use(function(req,res) {
     app.monkey_patch(req,res);
     res.end(req.isExpress + "," + res.isExpress);
 });
+
+//app.use(function(req,res) {
+//    res.end(req.isExpress + "," + res.isExpress);
+//});
 app.listen(4000);

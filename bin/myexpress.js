@@ -13,10 +13,8 @@ var app = express();
 
 //injector = inject(handler,app);
 //injector(req,res,next);
-app.factory("foo",function(res,req,cb) {
-    cb(null,"hello from foo DI!");
-})
-app.use(app.inject(function (res,foo) {
-    res.end(foo);
-}));
+app.use(function(req,res) {
+    app.monkey_patch(req,res);
+    res.end(req.isExpress + "," + res.isExpress);
+});
 app.listen(4000);

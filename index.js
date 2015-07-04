@@ -1,9 +1,11 @@
 var http = require('http');
 var merge = require('utils-merge');
 var Layer = require('./lib/layer');
-var makeRoute = require('./lib/route')
-var inject = require('./lib/injector')
+var makeRoute = require('./lib/route');
+var inject = require('./lib/injector');
 var methods = require('methods');
+var request = require('./lib/request');
+var response = require('./lib/response');
 var proto = {};
 
 module.exports = function() {
@@ -149,4 +151,12 @@ function call(layer, err, req, res, next) {
 proto.inject = function(fn) {
     var injector = inject(fn,this);
     return injector;
+};
+
+proto.monkey_patch = function(req, res) {
+    request.__proto__ = req;
+    req.prototype = request;
+
+    response.__proto__ = res;
+    res.prototype = response;
 };

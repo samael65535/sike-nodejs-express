@@ -85,7 +85,8 @@ proto.handle = function(req, res, next2) {
                     call(layer, err, req, res, next);
                 } catch(e) {
                     if (index >= stack.length) {
-                        res.writeHead(404);
+
+                        res.writeHead(e.statusCode || 404);
                         res.end();
                     } else {
                         next(e)

@@ -6,8 +6,8 @@ var app = express();
 app.use("/plumless",function(req,res) {
     res.send("plumless");
 });
-app.use("/buckeroo",function(req,res) {
-    res.setHeader("Etag","buckeroo");
-    res.send("buckeroo");
+app.use("/",function(req,res) {
+    res.setHeader("Etag","foo-v1")
+    res.send("foo-v1");
 });
 app.listen(4000);

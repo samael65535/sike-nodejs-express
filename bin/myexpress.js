@@ -7,9 +7,8 @@ var fs = require('fs');
 var request = require("supertest");
 function get(path,options) {
     app.use(function(req,res) {
-        res.sendfile(path,options);
+        res.sendfile("../verify/fixtures/data.txt",options);
     });
-
     return request(app).get("/");
 }
 get(__dirname);
